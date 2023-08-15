@@ -10,7 +10,6 @@
     <div class="container">
         <h1>List of Saves</h1>
         <h2>Evie</h2>
-        <h3>Deleting doesn't work yet</h3>
         <ul id="directoryList"></ul>
         <button onclick="goBack()">Go to Account</button>
     </div>
@@ -22,50 +21,62 @@
     <script src="../../js/emailcheck.js"></script>
     
     <script>
-        firebase.auth().onAuthStateChanged((user) => {
+        firebase.auth().onAuthStateChanged(async (user) => {
             if (user) {
                 const userId = user.uid;
                 const storageRef = firebase.storage().ref(`/users/${userId}/games/evie/saves/`);
 
-                storageRef.listAll()
-                    .then(async (result) => {
-                        const directoryList = document.getElementById("directoryList");
-                        
-                        for (const prefix of result.prefixes) {
-                            // Save{num} - Last updated {date}
-                            const li = document.createElement("li");
-                            const saveFileRef = prefix.child("save.dat");
-                            const metadata = await saveFileRef.getMetadata();
-                            const lastUpdatedDate = new Date(metadata.updated).toLocaleString();
-                            // Delete button
-                            const deleteButton = document.createElement("button");
-                            deleteButton.textContent = "Delete";
-                            deleteButton.className = "managebtn";
-                            deleteButton.addEventListener("click", () => {
-                                deleteDirectory(storageRef.child(prefix.name));
-                            });
-                            li.textContent = `${prefix.name} - Last Updated: ${lastUpdatedDate}`;
-                            li.appendChild(deleteButton);
-                            
-                            directoryList.appendChild(li);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("Error listing directories:", error);
-                    });
+                try {
+                    const result = await storageRef.listAll();
+                    const directoryList = document.getElementById("directoryList");
+
+                    for (const prefix of result.prefixes) {
+                        const li = document.createElement("li");
+                        const saveFileRef = prefix.child("save.dat");
+                        const metadata = await saveFileRef.getMetadata();
+                        const lastUpdatedDate = new Date(metadata.updated).toLocaleString();
+                        // Delete button
+                        const deleteButton = document.createElement("button");
+                        deleteButton.textContent = "Delete";
+                        deleteButton.className = "managebtn";
+                        deleteButton.addEventListener("click", async () => {
+                            // Delete files within the directory first
+                            await deleteFilesInDirectory(prefix);
+                            // Then delete the directory itself
+                            await deleteDirectory(storageRef.child(prefix.name));
+                        });
+                        li.textContent = `${prefix.name} - Last Updated: ${lastUpdatedDate}`;
+                        li.appendChild(deleteButton);
+
+                        directoryList.appendChild(li);
+                    }
+                } catch (error) {
+                    console.error("Error listing directories:", error);
+                }
             } else {
                 console.error("Error: User not authenticated");
             }
         });
 
-        function deleteDirectory(directoryRef) {
-            directoryRef.delete()
-                .then(() => {
-                    console.log("Directory deleted successfully.");
-                })
-                .catch((error) => {
-                    console.error("Error deleting directory:", error);
-                });
+        async function deleteFilesInDirectory(directoryRef) {
+            try {
+                const files = await directoryRef.listAll();
+                const deletePromises = files.items.map(file => file.delete());
+                await Promise.all(deletePromises);
+                console.log("Files deleted successfully.");
+            } catch (error) {
+                alert("Error deleting files:", error);
+            }
+        }
+
+        async function deleteDirectory(directoryRef) {
+            try {
+                await directoryRef.delete();
+                console.log("Directory deleted successfully.");
+                window.location.reload();
+            } catch (error) {
+                alert("Error deleting directory:", error);
+            }
         }
 
         function goBack() {
