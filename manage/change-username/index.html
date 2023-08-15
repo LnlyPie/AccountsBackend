@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LonelyPie Account - Change Username</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Change your Username</h2>
+        <form id="username-form">
+            <label for="newUsername">New Username:</label>
+            <input type="text" id="newUsername" name="newUsername" placeholder="Enter new username" required><br><br>
+            <button type="submit">Change Username</button>
+        </form>
+        <button onclick="goBack()">Go to Account</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    <script src="../../js/firebase-config.js"></script>
+    <script src="../../js/manage/change-username.js"></script>
+    <script src="../../js/emailcheck.js"></script>
+</body>
+</html>

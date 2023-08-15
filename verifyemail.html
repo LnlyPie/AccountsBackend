@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LonelyPie Account - Verify your Email</title>
+  </head>
+  <body>
+    <h2>Please verify your email</h2>
+    <h3>You should get an email with a verification link. Login again after verifying</h3><br>
+    <h3>You didn't get the email? <button onclick="resendEmail()">Resend it</button></h3>
+    <h3>You gave the wrong email? <button onclick="changeEmail()">Change Email</button></h3>
+    <h4>You'll be redirected to login page in 10 seconds</h4>
+    <script>
+        setTimeout(goToLogin, 10000)
+        function goToLogin() {
+            window.location.href = "/login";
+        }
+        function resendEmail() {
+            firebase.auth().onAuthStateChanged(function(user) {
+                user.sendEmailVerification(); 
+            });
+        }
+
+        function changeEmail() {
+            window.location.href = "/manage/change-email";
+        }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/login.js"></script>
+  </body>
+</html>

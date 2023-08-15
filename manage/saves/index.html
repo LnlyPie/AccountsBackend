@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LonelyPie Account - Manage Saves</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>List of Saves</h1>
+        <h2>Evie</h2>
+        <h3>Deleting doesn't work yet</h3>
+        <ul id="directoryList"></ul>
+        <button onclick="goBack()">Go to Account</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    <script src="../../js/firebase-config.js"></script>
+    <script src="../../js/emailcheck.js"></script>
+    
+    <script>
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                const userId = user.uid;
+                const storageRef = firebase.storage().ref(`/users/${userId}/games/evie/saves/`);
+
+                storageRef.listAll()
+                    .then(async (result) => {
+                        const directoryList = document.getElementById("directoryList");
+                        
+                        for (const prefix of result.prefixes) {
+                            // Save{num} - Last updated {date}
+                            const li = document.createElement("li");
+                            const saveFileRef = prefix.child("save.dat");
+                            const metadata = await saveFileRef.getMetadata();
+                            const lastUpdatedDate = new Date(metadata.updated).toLocaleString();
+                            // Delete button
+                            const deleteButton = document.createElement("button");
+                            deleteButton.textContent = "Delete";
+                            deleteButton.className = "managebtn";
+                            deleteButton.addEventListener("click", () => {
+                                deleteDirectory(storageRef.child(prefix.name));
+                            });
+                            li.textContent = `${prefix.name} - Last Updated: ${lastUpdatedDate}`;
+                            li.appendChild(deleteButton);
+                            
+                            directoryList.appendChild(li);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error listing directories:", error);
+                    });
+            } else {
+                console.error("Error: User not authenticated");
+            }
+        });
+
+        function deleteDirectory(directoryRef) {
+            directoryRef.delete()
+                .then(() => {
+                    console.log("Directory deleted successfully.");
+                })
+                .catch((error) => {
+                    console.error("Error deleting directory:", error);
+                });
+        }
+
+        function goBack() {
+            window.location.replace("../../account");
+        }
+    </script>
+</body>
+</html>
