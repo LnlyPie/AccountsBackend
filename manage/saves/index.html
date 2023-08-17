@@ -42,8 +42,6 @@
                         deleteButton.addEventListener("click", async () => {
                             // Delete files within the directory first
                             await deleteFilesInDirectory(prefix);
-                            // Then delete the directory itself
-                            await deleteDirectory(storageRef.child(prefix.name));
                         });
                         li.textContent = `${prefix.name} - Last Updated: ${lastUpdatedDate}`;
                         li.appendChild(deleteButton);
@@ -64,18 +62,9 @@
                 const deletePromises = files.items.map(file => file.delete());
                 await Promise.all(deletePromises);
                 console.log("Files deleted successfully.");
-            } catch (error) {
-                alert("Error deleting files:", error);
-            }
-        }
-
-        async function deleteDirectory(directoryRef) {
-            try {
-                await directoryRef.delete();
-                console.log("Directory deleted successfully.");
                 window.location.reload();
             } catch (error) {
-                alert("Error deleting directory:", error);
+                alert("Error deleting files: " + error.message);
             }
         }
 

@@ -21,6 +21,6 @@ registrationForm.addEventListener('submit', async (e) => {
         window.location.replace("../account");
     } catch (error) {
         console.error('Error registering user:', error.message);
-        alert('Error: ', error.message);
+        alert('Error while registering: ' + error.message);
     }
 });

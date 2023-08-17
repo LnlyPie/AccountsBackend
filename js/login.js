@@ -12,6 +12,6 @@ loginForm.addEventListener('submit', async (e) => {
         window.window.location.replace("../account");
     } catch (error) {
         console.error('Error logging in:', error.message);
-        alert('Error: ', error.message);
+        alert('Error: ' + error.message);
     }
 });

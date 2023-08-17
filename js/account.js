@@ -41,6 +41,6 @@ logoutButton.addEventListener('click', async () => {
         window.location.replace("../login");
     } catch (error) {
         console.error('Error logging out:', error.message);
-        alert('Error logging out: ', error.message);
+        alert('Error logging out: ' + error.message);
     }
 });
