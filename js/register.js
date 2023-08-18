@@ -15,9 +15,7 @@ registrationForm.addEventListener('submit', async (e) => {
         });
 
         console.log('User registered successfully:', user);
-        firebase.auth().onAuthStateChanged(function(user) {
-            user.sendEmailVerification(); 
-        });
+        user.sendEmailVerification();
         window.location.replace("../account");
     } catch (error) {
         console.error('Error registering user:', error.message);
