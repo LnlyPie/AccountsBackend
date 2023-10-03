@@ -7,12 +7,14 @@ const passChangeButton = document.getElementById('pass-change');
 const savesManagerButton = document.getElementById('manage-saves');
 const deleteAccountButton = document.getElementById('delete-account');
 
+var userEmailGlobal = null;
+
 firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         const username = user.displayName;
-        const userEmail = user.email;
+        userEmailGlobal = user.email;
         usernameElement.textContent = username ? username : "N/A";
-        userEmailElement.textContent = userEmail ? userEmail : "N/A";
+        userEmailElement.textContent = userEmailGlobal ? "*****" : "N/A";
     } else {
         console.log('No user is currently logged in.');
         window.location.replace("../login");
@@ -61,3 +63,14 @@ deleteAccountButton.addEventListener('click', async () => {
         }
     }
 });
+
+function showEmail() {
+    var x = document.getElementById("user-email");
+    if (x.textContent != "*****") {
+        x.textContent = "*****";
+    } else if (x.textContent === "N/A") {
+        console.error('User\'s email couldn\'t be loaded.')
+    } else {
+        x.textContent = userEmailGlobal;
+    }
+}
